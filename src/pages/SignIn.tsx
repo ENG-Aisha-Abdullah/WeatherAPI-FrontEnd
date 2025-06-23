@@ -7,48 +7,46 @@ import Swal from "sweetalert2";
 
 const SignIn: React.FC =() => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [passwordHash, setPassword] = useState("");
   const navigate = useNavigate();
 
   const LogInHandle = async () => {
-    if (!email.trim() || !password.trim()) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Fill all the fields please ",
-      });
-      return;
-    }
+  if (!email.trim() || !passwordHash.trim()) {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Fill all the fields please ",
+    });
+    return;
+  }
 
-    try {
-      const res = await axios.post("https://weatherapi-backend-d1qq.onrender.com/auth/signin", {
-        email,
-        password,
-      });
+  try {
+    const res = await axios.post("https://weatherapi-backend-d1qq.onrender.com/auth/signin", {
+      email,
+      passwordHash,
+    });
+   const token = res.data.data.accessToken 
 
-      const { accessToken, user } = res.data.data;
-
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("email", user.email);
-      localStorage.setItem("role", user.role);
-      localStorage.setItem("name", user.email);
-      localStorage.setItem("isLoggedIn", "true");
-
+    if (token) {
+      localStorage.setItem("Token", token); // ✅ تخزين التوكن
       Swal.fire({
         icon: "success",
         title: "Success!",
         text: "Logged in successfully!",
       }).then(() => {
-        navigate("/home");
+        navigate("home");
       });
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Login Failed",
-        text: "Email or Password is incorrect",
-      });
+    } else {
+      Swal.fire("Login succeeded but no token returned");
     }
-  };
+  } catch {
+    Swal.fire({
+      icon: "error",
+      title: "Login Failed",
+      text: "Email or Password is incorrect",
+    });
+  }
+};
 
   return (
     <div className="bg-gray-200 flex-1 h-screen">
@@ -76,7 +74,7 @@ const SignIn: React.FC =() => {
               required
               type="password"
               placeholder="Password"
-              value={password}
+              value={passwordHash}
               onChange={(e) => setPassword(e.target.value)}
               className="bg-white rounded items-center px-3 py-1 outline-gray-700"
             />
@@ -84,7 +82,7 @@ const SignIn: React.FC =() => {
 
           <div className="flex justify-center text-gray-700 text-sm">
             You don't have an account?
-            <Link className="px-1 hover:underline hover:text-red-900" to="/signUp">
+            <Link className="px-1 hover:underline hover:text-red-900" to="signUp">
               Sign Up
             </Link>
           </div>
