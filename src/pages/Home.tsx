@@ -70,10 +70,6 @@ const Home: React.FC = () => {
   };
 
   const getHistory = async () => {
-      if (!lat || !lon) {
-      Swal.fire("Please enter both Latitude and Longitude");
-      return;
-    }
     try {
       const res = await axios.get("https://weatherapi-backend-d1qq.onrender.com/history", {
         headers: {
